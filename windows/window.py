@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import ttk
+import configFunctions.functions
 
 deletar_depois = 0
 
@@ -42,6 +43,8 @@ def clientWindow():
     frame_clients = Frame(client_window, width=500, height=800, relief='raised', borderwidth=6, padx=2, pady=2)
     frame_clients.pack(side=LEFT, fill=Y, expand=False)
 
+    #Lista de clientes:
+
     clients = ttk.Treeview(frame_clients, columns=(
                            'Nome', 'Contato', 'Valor Total', 'CPF','ID'), show='headings', height=50)
 
@@ -54,21 +57,24 @@ def clientWindow():
 
     clients.column('ID', width=60)
 
+    configFunctions.functions.databank(clients)
+
+    clients.bind('<<TreeviewSelect>>', configFunctions.functions.item_selected(clients))
+    """Mudar o comando do view select para o do click"""
+
     #Frame de informações do cliente selecionado:
 
     frame_clients_informations = Frame(client_window, width=100, height=300, relief="raised", border=6, padx=2, pady=2)
     frame_clients_informations.pack(side=TOP, fill=X, expand=False)
     clientsInformations = ttk.Treeview(frame_clients_informations, columns=(
-        'Valor da Compra', 'Data', 'Horário'), show='headings', height=10)
+        'Valor da Compra', 'Data'), show='headings', height=10)
 
     clientsInformations.heading('Valor da Compra', text='Valor da Compra')
     clientsInformations.heading('Data', text='Data')
-    clientsInformations.heading('Horário', text='Horário')
     clientsInformations.pack(side=TOP, fill=X, expand=False)
 
     clientsInformations.column('Valor da Compra', width=100)
     clientsInformations.column('Data', width=50)
-    clientsInformations.column('Horário', width=50)
 
     total_label = Label(frame_clients_informations, text='Total: ', font=("Arial", 25))
     total_label_value = Label(frame_clients_informations, text=deletar_depois, font=("Arial", 25))
@@ -99,9 +105,9 @@ def clientWindow():
 
     # Botões da cadastro e de deletar clientes:
 
-    client_register_buttom = Button(client_window, text="Cadastrar", width=20, height=4, border=5)
+    client_register_buttom = Button(client_window, text="Deletar Cliente", width=20, height=4, border=5)
     client_register_buttom.pack(side=RIGHT, fill=X, expand=False, padx=35)
-    client_delete_buttom = Button(client_window, text="Deletar Cliente", width=20, height=4, border=5)
+    client_delete_buttom = Button(client_window, text="Deletar Cliente", width=20, height=4, border=5, command= lambda : clients)
     client_delete_buttom.pack(side=RIGHT, fill=X, expand=False, padx=35)
 
     client_window.mainloop()
