@@ -115,9 +115,7 @@ def NewUser(nome, contato, valor_inicial, cpf):
                              message='Os dados fornecidos estão incompatíveis, verifique-os e tente novamente.',
                              icon='error')
 
-def item_selected(treeview):
-    for selected_item in treeview.selection():
-        item = treeview.item(selected_item)
-        record = item['values']
-        # show a message
-        messagebox.showinfo(title='Information', message=','.join(record))
+def print_element(event):
+    tree = event.widget
+    teste = tree.item(tree.selection())
+    print(teste["values"][4])
