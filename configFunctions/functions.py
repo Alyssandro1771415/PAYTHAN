@@ -32,7 +32,7 @@ def databankDebts(treeview):
         messagebox.showerror(title='Database error.',
                              message='Erro ao tentar estabelecer conexão com o banco de dados.', icon='error')
 
-def deletar(treeview):
+def deletar(treeview, treeviewDebt):
     try:
         mydb = mysql.connector.connect(
             host="localhost",
@@ -47,24 +47,28 @@ def deletar(treeview):
 
         mycursor = mydb.cursor()
 
-        command = f"DELETE FROM USERS WHERE id = '{valor}';"
+        commandDeleteUser = f"DELETE FROM USERS WHERE id = '{valor}';"
+        commandDeleteDebts = f"DELETE FROM debtuser WHERE id = '{valor}';"
+        consultUsers = "select * from USERS order by id;"
+        consultDebts = "select * from debtuser order by id;"
 
-        consulta = "select * from USERS order by id"
-
-        mycursor.execute(command)
-
-        mydb.commit()
+        mycursor.execute(commandDeleteUser)
+        mycursor.execute(commandDeleteDebts)
 
         treeview.delete(*treeview.get_children())
+        treeviewDebt.delete(*treeviewDebt.get_children())
 
-        mycursor.execute(consulta)
-
+        mycursor.execute(consultUsers)
         linhas = mycursor.fetchall()
-
         for v in linhas:
             treeview.insert("", "end", values=v)
-        mydb.close()
 
+        mycursor.execute(consultDebts)
+        linhas = mycursor.fetchall()
+        for i in linhas:
+            treeviewDebt.insert("", "end", values=i)
+
+        mydb.close()
         mycursor.close()
     except:
         messagebox.showerror(title='Erro de dados.',
@@ -140,18 +144,15 @@ def newPurchase(treeview, entryValue, treeviewDebts):
                        (valor_compra, Data_atual, id) 
                        VALUES 
                        ('{entryValue}', '{date}', '{clientId}')"""
-
     consulta = "select * from debtuser order by id"
 
-    cursor = mydb.cursor()
-    cursor.execute(consulta)
+    mycursor.execute(insertDebt)
+    mycursor.execute(consulta)
 
-    linhas = cursor.fetchall()
+    linhas = mycursor.fetchall()
 
     for v in linhas:
         treeviewDebts.insert("", "end", values=v)
-
-    mycursor.execute(insertDebt)
 
     mydb.commit()
 

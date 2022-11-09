@@ -60,14 +60,14 @@ def clientWindow():
     configFunctions.functions.databankClients(clients)
 
     search_label = Label(frame_clients, text='Pesquisar: ')
-    search_label.pack(side=TOP, fill=Y, expand=False)
+    search_label.pack(side=TOP, expand=False)
     search_entry = Entry(frame_clients, width=50, border=5)
-    search_entry.pack(side=TOP, fill=Y, expand=False)
+    search_entry.pack(side=TOP, expand=False)
     search_buttom = Button(frame_clients, text='Pesquisar', command=lambda: configFunctions.functions.search(clients, search_entry))
-    search_buttom.pack(side=TOP, fill=Y, expand=False)
+    search_buttom.pack(side=TOP, expand=False)
 
     client_delete_buttom = Button(frame_clients, background='sea green', text="Deletar Cliente", width=15, height=3, border=5,
-                                  command=lambda: configFunctions.functions.deletar(clients))
+                                  command=lambda: configFunctions.functions.deletar(clients, clientsInformations))
     client_delete_buttom.pack(side=RIGHT, fill=X, expand=False, padx=35, pady=35)
 
     client_SUM_buttom = Button(frame_clients, background='sea green', text="Somar Dividas", width=15, height=3, border=5,
