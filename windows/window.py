@@ -119,7 +119,7 @@ def clientWindow():
     payment.pack(side=TOP, expand=False)
     paymentEntry = Entry(frame_clients_informations, width=30, border=5)
     paymentEntry.pack(side=TOP, expand=False)
-    paymentButtom = Button(frame_clients_informations, background='sea green', text="Pagar", padx=15, pady=5)
+    paymentButtom = Button(frame_clients_informations, background='sea green', text="Pagar", padx=15, pady=5, command=lambda: configFunctions.functions.payment(clients, clientsInformations, paymentEntry.get()))
     paymentButtom.pack(side=TOP, expand=False)
     newPurchase = Label(frame_clients_informations, text="Nova Compra: ", padx=5,pady=5)
     newPurchase.pack(side=TOP, expand=False)

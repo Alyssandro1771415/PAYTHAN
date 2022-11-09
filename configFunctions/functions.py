@@ -1,6 +1,42 @@
 import datetime
 from tkinter import messagebox
 import mysql.connector
+from math import ceil
+
+def cfp_validatior(cpf):
+    CPF = cpf
+    digitos = [int(a) for a in str(CPF)]
+    mult = [11, 10, 9, 8, 7, 6, 5, 4, 3, 2]
+    x = ()
+    y = ()
+
+    if len(digitos) == 11:
+
+        prod = [x * y for x, y in zip(digitos[0:9], mult[1:10])]
+        print(prod)
+        soma = sum(prod)
+        resto = soma % 11
+
+        if resto == 0 or 1:
+            x = 0
+
+        if resto >= 2:
+            x = 11 - resto
+        prod = [x * y for x, y in zip(digitos[0:10], mult[0:])]
+        print(prod)
+        soma = sum(prod)
+        resto = soma % 11
+
+        if resto == 0 or 1:
+            y = 0
+
+        if resto >= 2:
+            y = 11 - resto
+
+        if x == digitos[9] and y == digitos[10]:
+            return 'Válido'
+        else:
+            return 'Inválido'
 
 def databankClients(treeview):
     try:
@@ -96,26 +132,35 @@ def NewUser(nome, contato, cpf, treeview):
     try:
 
         con = mysql.connector.connect(host='localhost', database='UEPB_PROJECT', user='root', password='')
-        inserir = f"""INSERT INTO USERS
-                       (NOME, CONTATO, CPF) 
-                       VALUES 
-                       ('{nome}', '{contato}', '{cpf}')"""
 
-        consulta = "select * from USERS order by id"
+        validade = cfp_validatior(cpf)
 
-        cursor = con.cursor()
-        cursor.execute(inserir)
-        treeview.delete(*treeview.get_children())
-        cursor.execute(consulta)
+        if validade == 'Válido':
 
-        linhas = cursor.fetchall()
+            inserir = f"""INSERT INTO USERS
+                           (NOME, CONTATO, CPF) 
+                           VALUES 
+                           ('{nome}', '{contato}', '{cpf}')"""
 
-        for v in linhas:
-            treeview.insert("", "end", values=v)
+            consulta = "select * from USERS order by id"
 
-        con.commit()
-        con.close()
-        cursor.close()
+            cursor = con.cursor()
+            cursor.execute(inserir)
+            treeview.delete(*treeview.get_children())
+            cursor.execute(consulta)
+
+            linhas = cursor.fetchall()
+
+            for v in linhas:
+                treeview.insert("", "end", values=v)
+
+            con.commit()
+            con.close()
+            cursor.close()
+        else:
+            messagebox.showwarning(title='Erro de validade',
+                                 message='CPF inválido, digite corretamente e tente mais uma vez!',
+                                 icon='error')
     except:
         messagebox.showerror(title='Erro de dados.',
                              message='Os dados fornecidos estão incompatíveis, verifique-os e tente novamente.',
@@ -181,6 +226,29 @@ def totalDebt(treeviewId, treeviewDebts, label):
 
         con.close()
         cursor.close()
+    except:
+        messagebox.showerror(title='Database error.',
+                             message='Erro ao tentar estabelecer conexão com o banco de dados.', icon='error')
+
+def payment(treeviewId, treeviewDebts, paymentValue):
+    try:
+        print(paymentValue)
+        treeviewDebts.delete(*treeviewDebts.get_children())
+        item = treeviewId.selection()
+        valor = treeviewId.item(item, "values")[3]
+        con = mysql.connector.connect(host='localhost', database='UEPB_PROJECT', user='root', password='')
+        comando = f"select * from debtuser where id = '{valor}'"
+        cursor = con.cursor()
+        cursor.execute(comando)
+        linhas = cursor.fetchall()
+
+        for i in linhas:
+            print(i[0], i[1])
+            #Usar a data e hora como um tipo de ID para as dívidas
+
+        con.close()
+        cursor.close()
+
     except:
         messagebox.showerror(title='Database error.',
                              message='Erro ao tentar estabelecer conexão com o banco de dados.', icon='error')
