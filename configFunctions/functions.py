@@ -3,6 +3,9 @@ from tkinter import messagebox
 import mysql.connector
 from math import ceil
 
+import windows.window
+
+
 def cfp_validatior(cpf):
     CPF = cpf
     digitos = [int(a) for a in str(CPF)]
@@ -252,3 +255,14 @@ def payment(treeviewId, treeviewDebts, paymentValue):
     except:
         messagebox.showerror(title='Database error.',
                              message='Erro ao tentar estabelecer conexão com o banco de dados.', icon='error')
+
+def validate_login(login, password):
+    con = mysql.connector.connect(host='localhost', database='UEPB_PROJECT', user='root', password='')
+    consulta = "select login, CAST(AES_DECRYPT(passwaord_user,'chave') as char) from logins;"
+    cursor = con.cursor()
+    cursor.execute(consulta)
+    linhas = cursor.fetchall()
+
+    for i in linhas:
+        if login == i[0] and password == i[1]:
+            windows.window.clientWindow()

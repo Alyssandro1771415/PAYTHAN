@@ -16,20 +16,39 @@ def loginWindow():
     cabeca = Label(frame2, text='LOGIN', width=10, font=('argparse', 25))
     cabeca.grid(column=0, row=0, pady=20, columnspan=2)
 
-    Login2 = Label(frame2, text='LOGIN:', padx=5, pady=5)
-    Login2.grid(column=0, row=1, pady=5, padx=5, sticky='W')
-    et_login2 = Entry(frame2, width=30, border=3)
-    et_login2.grid(column=1, row=1)
+    Login = Label(frame2, text='LOGIN:', padx=5, pady=5)
+    Login.grid(column=0, row=1, pady=5, padx=5, sticky='W')
+    et_login = Entry(frame2, width=30, border=3)
+    et_login.grid(column=1, row=1)
 
-    Senha2 = Label(frame2, text='PASSWORD:', padx=5, pady=5)
-    Senha2.grid(column=0, row=2, pady=4, padx=5, sticky='W')
-    et_senha2 = Entry(frame2, width=30, border=3, show='*')
-    et_senha2.grid(column=1, row=2)
+    Senha = Label(frame2, text='PASSWORD:', padx=5, pady=5)
+    Senha.grid(column=0, row=2, pady=4, padx=5, sticky='W')
+    et_senha = Entry(frame2, width=30, border=3, show='*')
+    et_senha.grid(column=1, row=2)
 
-    mostrarSenha = Button(frame2, text='°', command="")
+    """Aqui tive que declarar essa variável como global para poder acessa-la e e alterar seu valor de dentro do botão
+    Não vi problemas devido a se tratarde de uma variável que semplesmente é usada para mudar o estado de mostrar ou 
+    esconder senha"""
+
+    global is_on
+    is_on = True
+    def switch(on_button, entry):
+        global is_on
+
+        # Determinando se está On ou Off
+        if is_on:
+            on_button.config(text="-")
+            entry.config(show="")
+            is_on = False
+        else:
+            on_button.config(text="°")
+            entry.config(show="*")
+            is_on = True
+
+    mostrarSenha = Button(frame2, text='°', command=lambda: switch(mostrarSenha, et_senha))
     mostrarSenha.grid(column=2, row=2)
 
-    NewWindow = Button(frame2, text='Janela 1', width=10, height=2, command="")
+    NewWindow = Button(frame2, text='Entrar', width=10, height=2, command=lambda: configFunctions.functions.validate_login(et_login.get(), et_senha.get()))
     NewWindow.grid(columnspan=2, row=4)
 
     login_window.mainloop()
