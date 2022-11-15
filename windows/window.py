@@ -1,7 +1,9 @@
 from tkinter import *
 from tkinter import ttk
 import configFunctions.functions
-
+import matplotlib.pyplot as plt
+import numpy as np
+import random
 
 def loginWindow():
     login_window = Tk()
@@ -53,8 +55,8 @@ def loginWindow():
 
     login_window.mainloop()
 
-
 def clientWindow():
+
     client_window = Tk()
     client_window.title("Dados de Clientes")
     client_window.state('zoomed')
@@ -93,9 +95,12 @@ def clientWindow():
                                   command=lambda: configFunctions.functions.totalDebt(clients, clientsInformations, total_label_value))
     client_SUM_buttom.pack(side=LEFT, fill=X, expand=False, padx=35, pady=35)
 
+    statistcs_buttom = Button(frame_clients, background='sea green', text='Estatísticas de Vendas', width=15, border=5, height=3, command=statistcsWindow)
+    statistcs_buttom.pack(side=BOTTOM, fill=X, expand=False, padx=35, pady=35)
+
     # Frame de cadastro de novos clientes:
 
-    frame_clients_register = Frame(client_window, width=100, height=300, relief="raised", border=6, padx=2, pady=2)
+    frame_clients_register = Frame(client_window, width=100, height=3, relief="raised", border=6, padx=2, pady=2)
     frame_clients_register.pack(side=BOTTOM, fill=X, expand=False)
 
     name_label = Label(frame_clients_register, text='Nome: ')
@@ -153,3 +158,27 @@ def clientWindow():
     total_label_value.pack(side=LEFT, fill=X, expand=False)
 
     client_window.mainloop()
+
+def statistcsWindow():
+    # Gráficos de barras 3D
+    fig = plt.figure(figsize=(8, 8))
+    ax = plt.axes(projection="3d")
+    num_barras = 10  # cada barra tem uma posição e um tamanho (ver isso para os 3 eixos)
+    x_pos = random.sample(range(20), num_barras)
+    print("x_pos", x_pos)
+    y_pos = random.sample(range(20), num_barras)
+    z_pos = [0] * num_barras
+    x_size = np.ones(num_barras)
+    y_size = np.ones(num_barras)
+    print("y_pos", y_pos)
+    z_size = random.sample(range(20), num_barras)
+    print("z_size", z_size)
+    ax.bar3d(x_pos, y_pos, z_pos, x_size, y_size, z_size, color='green')
+    ax.set_title('Estatíticas da Vendas Mensais', fontsize=18)
+    ax.set_xlabel('Valor de Vendas', fontsize=15)
+    ax.set_ylabel('Mês', fontsize=15)
+    ax.set_zlabel('Valor Quitado', fontsize=15)
+    ax.view_init(20, 45)
+    plt.show()
+
+statistcsWindow()

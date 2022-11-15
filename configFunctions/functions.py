@@ -2,7 +2,6 @@ import datetime
 from tkinter import messagebox
 import mysql.connector
 from math import ceil
-
 import windows.window
 
 
@@ -245,9 +244,13 @@ def payment(treeviewId, treeviewDebts, paymentValue):
         cursor.execute(comando)
         linhas = cursor.fetchall()
 
+        total = 0
+
         for i in linhas:
-            print(i[0], i[1])
-            #Usar a data e hora como um tipo de ID para as dívidas
+            total = 0
+            while total <= paymentValue:
+                total += float(i[0])
+                print(total)
 
         con.close()
         cursor.close()
@@ -266,3 +269,4 @@ def validate_login(login, password):
     for i in linhas:
         if login == i[0] and password == i[1]:
             windows.window.clientWindow()
+
