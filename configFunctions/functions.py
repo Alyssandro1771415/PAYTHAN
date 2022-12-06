@@ -1,9 +1,18 @@
 import datetime
 from tkinter import messagebox
 import mysql.connector
-from math import ceil
 import windows.window
 
+def validate_login(login, password):
+    con = mysql.connector.connect(host='localhost', database='UEPB_PROJECT', user='root', password='')
+    consulta = "select login, CAST(AES_DECRYPT(password_user,'chave') as char) from logins;"
+    cursor = con.cursor()
+    cursor.execute(consulta)
+    linhas = cursor.fetchall()
+
+    for i in linhas:
+        if login == i[0] and password == i[1]:
+            windows.window.clientWindow()
 
 def cfp_validatior(cpf):
     CPF = cpf
@@ -81,11 +90,11 @@ def deletar(treeview, treeviewDebt):
 
         item = treeview.selection()
 
-        valor = treeview.item(item, "values")[3]
+        valor = treeview.item(item, "values")[0]
 
         mycursor = mydb.cursor()
 
-        commandDeleteUser = f"DELETE FROM USERS WHERE id = '{valor}';"
+        commandDeleteUser = f"DELETE FROM users WHERE ID = '{valor}';"
         commandDeleteDebts = f"DELETE FROM debtuser WHERE id = '{valor}';"
         consultUsers = "select * from USERS order by id;"
         consultDebts = "select * from debtuser order by id;"
@@ -181,7 +190,7 @@ def newPurchase(treeview, entryValue, treeviewDebts):
 
     tree = treeview.selection()
 
-    clientId = int(treeview.item(tree, "values")[3])
+    clientId = int(treeview.item(tree, "values")[0])
 
     date = datetime.datetime.today()
 
@@ -211,7 +220,7 @@ def totalDebt(treeviewId, treeviewDebts, label):
     try:
         treeviewDebts.delete(*treeviewDebts.get_children())
         item = treeviewId.selection()
-        valor = treeviewId.item(item, "values")[3]
+        valor = treeviewId.item(item, "values")[0]
         con = mysql.connector.connect(host='localhost', database='UEPB_PROJECT', user='root', password='')
         comando = f"select * from debtuser where id = '{valor}'"
         cursor = con.cursor()
@@ -234,39 +243,81 @@ def totalDebt(treeviewId, treeviewDebts, label):
 
 def payment(treeviewId, treeviewDebts, paymentValue):
     try:
-        print(paymentValue)
-        treeviewDebts.delete(*treeviewDebts.get_children())
         item = treeviewId.selection()
-        valor = treeviewId.item(item, "values")[3]
+        valueID = treeviewId.item(item, "values")[0]
         con = mysql.connector.connect(host='localhost', database='UEPB_PROJECT', user='root', password='')
-        comando = f"select * from debtuser where id = '{valor}'"
+        consulta = f"select sum(valor_compra) from debtuser where id = '{valueID}';"
         cursor = con.cursor()
-        cursor.execute(comando)
-        linhas = cursor.fetchall()
+        cursor.execute(consulta)
+        total = cursor.fetchone()
 
-        total = 0
+        consulta = f"delete from debtuser where id = '{valueID}';"
+        cursor.execute(consulta)
 
-        for i in linhas:
-            total = 0
-            while total <= paymentValue:
-                total += float(i[0])
-                print(total)
+        consulta = f"insert into debtuser values('{valueID}','{float(total[0]) - float(paymentValue)}','{datetime.datetime.today()}')"
+        cursor.execute(consulta)
 
+        consulta = "select * from debtuser order by id"
+        cursor.execute(consulta)
+        valores = cursor.fetchall()
+        for v in valores:
+            treeviewDebts.insert("", "end", values=v)
+
+        con.commit()
         con.close()
         cursor.close()
 
     except:
-        messagebox.showerror(title='Database error.',
-                             message='Erro ao tentar estabelecer conexão com o banco de dados.', icon='error')
+        messagebox.showerror(title='Erro de dados.',
+                             message='Os dados fornecidos estão incompatíveis, verifique-os e tente novamente.',
+                             icon='error')
 
-def validate_login(login, password):
+def listYears(list):
     con = mysql.connector.connect(host='localhost', database='UEPB_PROJECT', user='root', password='')
-    consulta = "select login, CAST(AES_DECRYPT(passwaord_user,'chave') as char) from logins;"
+    consulta = "select distinct year(data_pagamento) from payments;"
     cursor = con.cursor()
     cursor.execute(consulta)
     linhas = cursor.fetchall()
 
     for i in linhas:
-        if login == i[0] and password == i[1]:
-            windows.window.clientWindow()
+        list.append(i)
 
+def year_datas(year):
+    con = mysql.connector.connect(host='localhost', database='UEPB_PROJECT', user='root', password='')
+    cursor = con.cursor()
+
+    consulta1 = f"select distinct month(data_pagamento) from payments where year(data_pagamento) = '{year}';"
+    #OBS: Os meses que me interessam são apenas aqueles onde houveram pagamentos, por isso puxo da tabela payments
+    cursor.execute(consulta1)
+    linhas = cursor.fetchall()
+
+    month = []
+    debts = []
+    paydDebts = []
+
+    for i in linhas:
+        if i == None:
+            month.append(0)
+        else:
+            month.append(i[0])
+
+    for i in month:
+        consulta2 = f"select sum(valor_compra) from debtuser where month(Data_atual) = '{i}';"
+        cursor.execute(consulta2)
+        linhas = cursor.fetchall()
+        for j in linhas:
+            if j[0] == None:
+                debts.append(0)
+            else:
+                debts.append(j[0])
+
+        consulta3 = f"select sum(valores_pagos) from payments where month(data_pagamento) = '{i}';"
+        cursor.execute(consulta3)
+        linhas = cursor.fetchall()
+        for j in linhas:
+            if j[0] == None:
+                paydDebts.append(0)
+            else:
+                paydDebts.append(j[0])
+
+    windows.window.statistcsWindow(debts, month, paydDebts)
