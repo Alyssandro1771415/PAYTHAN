@@ -9,4 +9,4 @@ O programa tem algumas funcionalidade às quais são citadas abaixo:
 - Somar as dívidas do cliente selecionado fazendo uso do botão "Somar".
 - Realizar a quitação e atualização da dívida do cliente selecionado preenchendo o campo e precionando o botão "Pagar".
 
-OBS: Ainda não há um campo para cadastrar o banco de dados do usuário, isso é precisso que o próprio desenvolvedor altere no código ponto as informações da DB em nuvem ou local em questão.
+OBS: Ainda não há um campo para cadastrar o banco de dados do usuário, para isso é precisso que o próprio desenvolvedor altere no código ponto as informações da DB em nuvem ou local em questão.
