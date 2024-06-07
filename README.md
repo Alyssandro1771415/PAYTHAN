@@ -1,5 +1,5 @@
 # PAYTHAN
- Programa com o objetivo substituir os tradicionais cadernos de contas.
+ Programa com o objetivo substituir os tradicionais cadernos de contas. Trata-se do projeto final da cadeira de algoritmos ao qual foi proposto pela professora Kézia Vaconcelos.
 
 O programa tem algumas funcionalidade às quais são citadas abaixo:
 
